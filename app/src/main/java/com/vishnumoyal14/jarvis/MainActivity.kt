@@ -127,12 +127,16 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
 
     private fun processCommand(command: String) {
 
-        when {
+    when {
+        command.contains("chrome") ||
+        command.contains("क्रोम") -> {
+            openApp("com.android.chrome", "Chrome")
+        }
 
-            command.contains("youtube") ||
-            command.contains("यूट्यूब") -> {
-                openApp("com.google.android.youtube", "YouTube")
-            }
+        command.contains("youtube") ||
+        command.contains("यूट्यूब") -> {
+            openApp("com.google.android.youtube", "YouTube")
+        }
 
             command.contains("instagram") ||
             command.contains("इंस्टाग्राम") -> {
