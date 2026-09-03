@@ -128,55 +128,46 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     private fun processCommand(command: String) {
 
     when {
-        command.contains("chrome") ||
-        command.contains("क्रोम") -> {
-            openApp("com.android.chrome", "Chrome")
+        command.contains("settings") ||
+        command.contains("setting") ||
+        command.contains("सेटिंग") -> {
+            openSettings()
         }
 
-        command.contains("youtube") ||
-        command.contains("यूट्यूब") -> {
-            openApp("com.google.android.youtube", "YouTube")
+        command.contains("home") ||
+        command.contains("होम") -> {
+            goHome()
         }
 
-            command.contains("instagram") ||
-            command.contains("इंस्टाग्राम") -> {
-                openApp("com.instagram.android", "Instagram")
-            }
-
-            command.contains("settings") ||
-            command.contains("setting") ||
-            command.contains("सेटिंग") -> {
-                openSettings()
-            }
-
-            command.contains("home") ||
-            command.contains("होम") -> {
-                goHome()
-            }
-
-            command.contains("back") ||
-            command.contains("पीछे") -> {
-                goBack()
-            }
-
-            command.contains("increase volume") ||
-            command.contains("volume बढ़ा") ||
-            command.contains("आवाज़ बढ़ा") -> {
-                changeVolume(AudioManager.ADJUST_RAISE)
-            }
-
-            command.contains("decrease volume") ||
-            command.contains("volume कम") ||
-            command.contains("आवाज़ कम") -> {
-                changeVolume(AudioManager.ADJUST_LOWER)
-            }
-
-            else -> {
-                status.text =
-                    "You said:\n\"$command\"\n\nI don't know that command yet."
-                speak("I heard you, but I don't know that command yet.")
-            }
+        command.contains("back") ||
+        command.contains("पीछे") -> {
+            goBack()
         }
+
+        command.contains("increase volume") ||
+        command.contains("volume बढ़ा") ||
+        command.contains("आवाज़ बढ़ा") -> {
+            changeVolume(AudioManager.ADJUST_RAISE)
+        }
+
+        command.contains("decrease volume") ||
+        command.contains("volume कम") ||
+        command.contains("आवाज़ कम") -> {
+            changeVolume(AudioManager.ADJUST_LOWER)
+        }
+
+        command.contains("open ") ||
+        command.contains(" kholo") ||
+        command.contains("खोलो") -> {
+            openInstalledApp(command)
+        }
+
+        else -> {
+            status.text =
+                "You said:\n\"$command\"\n\nI don't know that command yet."
+            speak("I heard you, but I don't know that command yet.")
+        }
+    }
     }
 
     private fun openApp(packageName: String, appName: String) {
