@@ -4,7 +4,9 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.AudioManager
 import android.os.Bundle
+import android.provider.Settings
 import android.speech.RecognizerIntent
 import android.speech.tts.TextToSpeech
 import android.widget.Button
@@ -112,17 +114,115 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             val command = results?.firstOrNull()
 
             if (command != null) {
-
                 status.text =
-                    "You said:\n\"$command\"\n\nJARVIS heard you."
+                    "You said:\n\"$command\"\n\nProcessing..."
 
-                speak("I heard you. How can I help?")
+                processCommand(command.lowercase(Locale.getDefault()))
             } else {
-
                 status.text = "I couldn't understand that."
-
                 speak("Sorry, I couldn't understand that.")
             }
+        }
+    }
+
+    private fun processCommand(command: String) {
+
+        when {
+
+            command.contains("youtube") ||
+            command.contains("यूट्यूब") -> {
+                openApp("com.google.android.youtube", "YouTube")
+            }
+
+            command.contains("instagram") ||
+            command.contains("इंस्टाग्राम") -> {
+                openApp("com.instagram.android", "Instagram")
+            }
+
+            command.contains("settings") ||
+            command.contains("setting") ||
+            command.contains("सेटिंग") -> {
+                openSettings()
+            }
+
+            command.contains("home") ||
+            command.contains("होम") -> {
+                goHome()
+            }
+
+            command.contains("back") ||
+            command.contains("पीछे") -> {
+                goBack()
+            }
+
+            command.contains("increase volume") ||
+            command.contains("volume बढ़ा") ||
+            command.contains("आवाज़ बढ़ा") -> {
+                changeVolume(AudioManager.ADJUST_RAISE)
+            }
+
+            command.contains("decrease volume") ||
+            command.contains("volume कम") ||
+            command.contains("आवाज़ कम") -> {
+                changeVolume(AudioManager.ADJUST_LOWER)
+            }
+
+            else -> {
+                status.text =
+                    "You said:\n\"$command\"\n\nI don't know that command yet."
+                speak("I heard you, but I don't know that command yet.")
+            }
+        }
+    }
+
+    private fun openApp(packageName: String, appName: String) {
+
+        val intent = packageManager.getLaunchIntentForPackage(packageName)
+
+        if (intent != null) {
+            startActivity(intent)
+            status.text = "Opening $appName..."
+            speak("Opening $appName")
+        } else {
+            status.text = "$appName is not installed."
+            speak("$appName is not installed.")
+        }
+    }
+
+    private fun openSettings() {
+        startActivity(Intent(Settings.ACTION_SETTINGS))
+        status.text = "Opening Settings..."
+        speak("Opening Settings")
+    }
+
+    private fun goHome() {
+        val intent = Intent(Intent.ACTION_MAIN)
+        intent.addCategory(Intent.CATEGORY_HOME)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(intent)
+
+        speak("Going home")
+    }
+
+    private fun goBack() {
+        onBackPressedDispatcher.onBackPressed()
+        speak("Going back")
+    }
+
+    private fun changeVolume(direction: Int) {
+
+        val audioManager =
+            getSystemService(AUDIO_SERVICE) as AudioManager
+
+        audioManager.adjustVolume(
+            direction,
+            AudioManager.FLAG_SHOW_UI
+        )
+
+        if (direction == AudioManager.ADJUST_RAISE) {
+            speak("Volume increased")
+        } else {
+            speak("Volume decreased")
         }
     }
 
@@ -151,8 +251,6 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
             grantResults[0] == PackageManager.PERMISSION_GRANTED
         ) {
             startVoiceInput()
-        } else if (requestCode == REQUEST_AUDIO) {
-            status.text = "Microphone permission is required."
         }
     }
 
