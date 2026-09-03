@@ -170,6 +170,58 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     }
     }
 
+    private fun openInstalledApp(command: String) {
+
+    val appName = command
+        .replace("open", "")
+        .replace(" kholo", "")
+        .replace("खोलो", "")
+        .trim()
+
+    if (appName.isEmpty()) {
+        speak("Which app should I open?")
+        return
+    }
+
+    val intent = Intent(Intent.ACTION_MAIN).apply {
+        addCategory(Intent.CATEGORY_LAUNCHER)
+    }
+
+    val apps = packageManager.queryIntentActivities(intent, 0)
+
+    val match = apps.firstOrNull { resolveInfo ->
+        val label = resolveInfo.loadLabel(packageManager)
+            .toString()
+            .lowercase(Locale.getDefault())
+
+        label == appName ||
+        label.contains(appName) ||
+        appName.contains(label)
+    }
+
+    if (match != null) {
+
+        val launchIntent =
+            packageManager.getLaunchIntentForPackage(
+                match.activityInfo.packageName
+            )
+
+        if (launchIntent != null) {
+            startActivity(launchIntent)
+
+            val label =
+                match.loadLabel(packageManager).toString()
+
+            status.text = "Opening $label..."
+            speak("Opening $label")
+        }
+
+    } else {
+        status.text = "I couldn't find $appName."
+        speak("I couldn't find $appName.")
+    }
+    }
+    
     private fun openApp(packageName: String, appName: String) {
 
         val intent = packageManager.getLaunchIntentForPackage(packageName)
