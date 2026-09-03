@@ -205,8 +205,9 @@ class MainActivity : Activity(), TextToSpeech.OnInitListener {
     }
 
     private fun goBack() {
-        onBackPressedDispatcher.onBackPressed()
-        speak("Going back")
+    @Suppress("DEPRECATION")
+    onBackPressed()
+    speak("Going back")
     }
 
     private fun changeVolume(direction: Int) {
